@@ -37,3 +37,8 @@
   padding:3px;
   overflow:auto;
 }
+
+.spinner__loading {
+  display: flex;
+  justify-content: center;
+}

@@ -1,12 +1,14 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import * as jspdf from 'jspdf'
 import html2canvas from 'html2canvas'
 import { jsPDF } from "jspdf";
 import html2pdf from "html2pdf.js"
 import { QuestionnaireService } from './services/questionnaire.service';
-
+import { AlertController, LoadingController } from '@ionic/angular';
+import { MatDialog } from '@angular/material/dialog';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +25,9 @@ import { QuestionnaireService } from './services/questionnaire.service';
 })
 export class AppComponent implements OnInit {
 
+  @ViewChild('existsDialog') existsDialog: TemplateRef<any>;
+  @ViewChild('submitDialog') submitDialog: TemplateRef<any>;
+  @ViewChild('failDialog') failDialog: TemplateRef<any>;
   title = 'entrisec-booking';
   bookingForm: FormGroup;
   disableSelect = new FormControl(false);
@@ -30,13 +35,15 @@ export class AppComponent implements OnInit {
   isShow = false;
   nDate:any;
   questionnaire: any;
+  value = 0;
+  loading = false;
 
   elementType: 'url' | 'img' | 'canvas' = 'canvas';
 
   todays_date:any;
   visitor_number:any;
 
-  constructor(public service: QuestionnaireService) { }
+  constructor(public service: QuestionnaireService, private dialog: MatDialog, public loadingCtrl: LoadingController, public alertCtrl: AlertController) { }
 
   ngOnInit() {
 
@@ -53,16 +60,6 @@ export class AppComponent implements OnInit {
 
   }
 
-  onFail(){
-    if(confirm('This Questionnaire was not saved')){
-      return;
-      // let currentUrl = this.router.url;
-      // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-      // this.router.onSameUrlNavigation = 'reload';
-      // this.router.navigate([currentUrl]);
-    }
-  }
-
   checkForQuestionnaire(){
     if(this.service.form.valid){
       this.service.getValidQuestionnaire(this.service.form.value.employee_id)
@@ -70,12 +67,36 @@ export class AppComponent implements OnInit {
       this.questionnaire = res;
       console.log(this.questionnaire);
         if(this.questionnaire.length > 0){
-          this.displayBadge();
+          this.exists();
+        }else{
+          this.submit();
         }
       }, err => {
         console.log(err);
       });
     }
+  }
+
+  async exists() {
+    this.dialog.open(this.existsDialog);
+  }
+
+  async submit() {
+    this.dialog.open(this.submitDialog);
+  }
+
+  loadContent() {
+    this.loading = true;
+    const subs$: Subscription = interval(200).subscribe(res => {
+      this.value = this.value + 10;
+      if(this.value === 150) {
+        subs$.unsubscribe();
+        this.loading = false;
+        this.value = 0;
+        this.showBadge();
+        this.dialog.closeAll();
+      }
+    });
   }
 
   delay(ms: number) {
@@ -84,9 +105,30 @@ export class AppComponent implements OnInit {
 
   async onSubmit(){
     await this.service.submit(this.service.form.value).subscribe();
-    await this.delay(2000);
-    this.checkForQuestionnaire();
-    //this.onClear();
+    await this.loadContent();
+  }
+
+  showBadge(){
+    if(this.service.form.valid){
+      this.service.getValidQuestionnaire(this.service.form.value.employee_id)
+       .subscribe(res => {
+      this.questionnaire = res;
+      console.log(this.questionnaire);
+        if(this.questionnaire.length > 0){
+          this.displayBadge();
+        }
+
+        if(this.questionnaire.length == 0 ){
+          this.notSubmitted();
+        }
+      }, err => {
+        console.log(err);
+      });
+    }
+  }
+
+  async notSubmitted() {
+    this.dialog.open(this.failDialog);
   }
 
   displayBadge(){

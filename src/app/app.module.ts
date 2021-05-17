@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
 import { FlexLayoutModule } from '@angular/flex-layout';
-
+import { IonicModule } from '@ionic/angular';
 
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -22,6 +22,8 @@ import {LayoutModule} from '@angular/cdk/layout';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,7 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    IonicModule,
     ReactiveFormsModule,
     MatGridListModule,
     MatFormFieldModule,
@@ -43,6 +46,8 @@ import { HttpClientModule } from '@angular/common/http';
     MatCardModule,
     MatCheckboxModule,
     MatRadioModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
     HttpClientModule,
     NgxQRCodeModule,
     LayoutModule,

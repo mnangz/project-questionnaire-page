@@ -2,7 +2,7 @@
   <div @fade class="container" fxLayout="row" fxLayout.sm="column" fxLayout.xs="column" fxLayoutGap="40px"  style="padding: 50px;">
     <div class="FixedHeightContainer" fxFlex="50">
           <p style="font-size: 25px; text-align: center;">Questionnaire</p>
-          <form [formGroup]="service.form" class="normal-form" (submit)="onSubmit()">
+          <form [formGroup]="service.form" class="normal-form" (submit)="checkForQuestionnaire()">
             <div class="controles-container">
 
               <mat-form-field appearance="fill" style="width: 100%;">
@@ -230,8 +230,43 @@
       </mat-card>
     </div>
   </div>
-
-
-
-
 </div>
+
+<ng-template #existsDialog>
+  <h2 matDialogTitle>Already Exists!</h2>
+  <p matDialogContent>A valid questionnaire with this reference number already exists, please see the health professional</p>
+  <mat-dialog-actions align="end">
+    <button mat-button matDialogClose>Ok</button>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #failDialog>
+  <h2 matDialogTitle>Submission Failed!</h2>
+  <p matDialogContent>The badge was not succesfully submitted, please refresh the page and try again.</p>
+  <mat-dialog-actions align="end">
+    <button mat-button matDialogClose>Ok</button>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #submitDialog>
+  <div *ngIf="loading">
+    <h2 matDialogTitle>Submitting...</h2>
+    <div class="spinner__loading">
+      <div>
+        <mat-progress-spinner
+          diameter="60"
+          [value]="value"
+          mode="determinate">
+          </mat-progress-spinner>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!loading">
+    <h2 matDialogTitle>Confirmation</h2>
+    <p matDialogContent>Submit the questionnaire for review?</p>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onSubmit()">Submit</button>
+      <button mat-button matDialogClose>Cancel</button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
